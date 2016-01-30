@@ -1,0 +1,28 @@
+{
+  "messages": [
+    {
+      "name": "start"
+    },
+    {
+      "name": "with-arguments",
+      "arguments": [
+        {
+          "name": "argument1",
+          "type": "string"
+        },
+        {
+          "name": "argument2",
+          "type": "number"
+        },
+        {
+          "name": "argument3",
+          "type": "range",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "default": 50
+        }
+      ]
+    }
+  ]
+}
