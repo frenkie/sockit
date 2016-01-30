@@ -18,16 +18,24 @@
 
         <div class="row">
             <div class="col">
-                <p>Pass on commands as if you were a client</p>
-                <div class="commandos"></div>
+                <p>Pass on messages as if you were a client</p>
+                <div class="messages form"></div>
             </div>
         </div>
     </div>
 </div>
 
+<script src="/vendor/handlebars/dist/handlebars.min.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script src="/config.js"></script>
-<script src="js/FormGenerator.js"></script>
+
+<script id="form-element" type="text/x-handlebars-template">
+    <div class="form-group">
+        <button id="{{name}}" class="btn btn-primary {{#hasArguments}}has-arguments{{/hasArguments}}">{{name}}</button>
+    </div>
+</script>
+
+<script src="js/MessageForm.js"></script>
 <script src="js/impl.js"></script>
 </body>
 </html>

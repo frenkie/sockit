@@ -1,4 +1,0 @@
-var FormGenerator = function () {
-
-
-};

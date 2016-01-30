@@ -1,10 +1,7 @@
 {
-  "messages": [
-    {
-      "name": "start"
-    },
-    {
-      "name": "with-arguments",
+  "messages": {
+    "start": {},
+    "with-arguments": {
       "arguments": [
         {
           "name": "argument1",
@@ -24,5 +21,5 @@
         }
       ]
     }
-  ]
+  }
 }

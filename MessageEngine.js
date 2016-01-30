@@ -2,39 +2,51 @@ var debug = require('debug')('message-engine');
 
 /**
  * @param {Socket.io} socket
- * @param {Object} messages array of message objects to handle
+ * @param {Object} messages Hash of message names and objects to handle
  */
 var MessageEngine = function ( socket, messages ) {
 
     this.socket = socket;
     this.messages = messages;
 
-    this.createMessageHandlers();
+    this.bindSocketHandlers();
 };
 
 MessageEngine.prototype = {
 
-    createMessageHandler: function ( messageName ) {
+    bindSocketHandlers: function () {
 
-        this.socket.on( messageName, function () {
+        var engine = this;
 
-            this.socket.emit.apply( this.socket, messageName, arguments );
+        this.socket.on('connection', function ( client ) {
 
-        }.bind( this ) );
+            for ( message in engine.messages ) {
+
+                (function ( messageName ) {
+                    client.on( messageName, function ( data ) {
+                        engine.handleMessage( client, messageName, data );
+                    } );
+                })( message );
+            }
+        });
     },
 
-    createMessageHandlers: function () {
+    handleMessage: function ( client, name, args ) {
 
-        this.messages.forEach( function ( message ) {
+        var messageObject = this.messages[ name ];
 
-            if ( typeof message.handleArguments == 'function' ) {
+        args = args || [];
 
-            } else {
+        if ( messageObject ) {
 
-                this.createMessageHandler( message.name );
+            if ( messageObject.handleArguments ) {
+                debug('handling arguments of '+ name );
+                args = messageObject.handleArguments( args );
             }
 
-        }.bind( this ) );
+            debug('sending '+ name );
+            this.socket.emit( name, args );
+        }
     }
 };
 

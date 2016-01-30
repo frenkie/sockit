@@ -33,9 +33,9 @@ fs.stat('./config.json', function ( err, stats ) {
         // to your ip address
         server.listen( port, '0.0.0.0', function () {
 
-            debug( 'sockit started on localhost:' + port );
+            debug( 'started on localhost:' + port );
 
-            new MessageEngine( io, require('./config.json').messages || [] );
+            new MessageEngine( io, require('./config.json').messages || {} );
         } );
     }
 });
