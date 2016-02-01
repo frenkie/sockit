@@ -59,7 +59,7 @@
         <div class="form-group">
             {{#isRange}}
                 <label for="{{../name}}-{{name}}">{{name}} ( {{min}}-{{max}}, step {{step}} )</label>
-                <input type="range" min="{{min}}" max="{{max}}" step="{{step}}" id="{{../name}}-{{name}}" />
+                <input type="range" min="{{min}}" max="{{max}}" step="{{step}}" value="{{default}}" id="{{../name}}-{{name}}" />
                 <span id="{{../name}}-{{name}}-value" class="range-value"></span>
             {{/isRange}}
 
