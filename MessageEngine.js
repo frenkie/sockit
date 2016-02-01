@@ -9,6 +9,7 @@ var MessageEngine = function ( socket, messages ) {
     this.socket = socket;
     this.messages = messages;
 
+    this.prepareArgumentHandlers();
     this.bindSocketHandlers();
 };
 
@@ -21,27 +22,15 @@ MessageEngine.prototype = {
         this.socket.on('connection', function ( client ) {
 
             for ( message in engine.messages ) {
-
-                (function ( messageName ) {
-                    client.on( messageName, function ( data ) {
-                        engine.handleMessage( client, messageName, data );
-                    } );
-                })( message );
+                if ( engine.messages.hasOwnProperty( message ) ) {
+                    (function ( messageName ) {
+                        client.on( messageName, function ( data ) {
+                            engine.handleMessage( client, messageName, data );
+                        } );
+                    })( message );
+                }
             }
         });
-    },
-
-    /**
-     * @param {Array} args
-     * @param {String} functionDefinition Should handle the function's arguments
-     *
-     * @return {Object} return what the message's real argument(s) should be
-     */
-    handleArguments: function ( args, functionDefinition ) {
-
-        var handleFunction = eval( functionDefinition );
-
-        return handleFunction.apply( handleFunction, args );
     },
 
     handleMessage: function ( client, name, args ) {
@@ -52,13 +41,29 @@ MessageEngine.prototype = {
 
         if ( messageObject ) {
 
-            if ( messageObject.handleArguments ) {
+            if ( messageObject.handleArguments && typeof messageObject.handleArguments === 'function' ) {
                 debug('handling arguments of '+ name, args );
-                args = this.handleArguments( args, messageObject.handleArguments );
+                args = messageObject.handleArguments.apply( messageObject.handleArguments, args );
             }
 
-            debug('sending '+ name, ', arguments: ', args );
+            debug('sending '+ name, args );
             this.socket.emit( name, args );
+        }
+    },
+
+    /**
+     * Evals the message's function definitions to real functions
+     */
+    prepareArgumentHandlers: function () {
+
+        for ( message in this.messages ) {
+            if ( this.messages.hasOwnProperty( message ) ) {
+
+                var message = this.messages[ message ];
+                if ( message.handleArguments ) {
+                    message.handleArguments = eval( message.handleArguments );
+                }
+            }
         }
     }
 };
