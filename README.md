@@ -75,3 +75,22 @@ You can also run a debug version of the server with debug output and
 live reloading of the server when file contents change.
 
 Just do `npm run debug` and tada!
+
+## client example
+Need a quick copy pastable client example? Here's an HTML/JavaScript one
+based on ip and port configurations of sockit, adjust where needed:
+ 
+```html
+
+<script src="http://localhost:8080/socket.io/socket.io.js"></script>
+<script>
+
+    var socket = io( 'http://localhost:8080' );
+    
+    socket.on('message-name', function ( data ) {
+    
+    });
+
+</script>
+ 
+``` 
