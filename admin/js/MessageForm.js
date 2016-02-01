@@ -13,15 +13,53 @@ var MessageForm = function ( socket, container, elementTemplate ) {
 
 MessageForm.prototype = {
 
-    _bindSendHandlers : function () {
+
+    _bindInputHandlers: function () {
+
+        var container = this._container;
+
+        Array.prototype.forEach.call( this._container.querySelectorAll('input[type=range]'), function ( range ) {
+
+            var updateValue = function ( to ) {
+                container.querySelector( '#'+ range.id +'-value' ).innerHTML = to;
+            };
+
+            range.addEventListener('input', function () {
+                updateValue( this.value );
+            });
+
+            updateValue( range.value );
+        });
+    },
+
+    _bindSendHandlers: function () {
 
         var socket = this._socket;
+        var container = this._container;
 
         Array.prototype.forEach.call( this._container.querySelectorAll('button'), function ( button ) {
+
             button.addEventListener('click', function () {
 
+                var args = [];
+
                 if ( /has-arguments/.test( button.className ) ) {
-                    
+
+                    Array.prototype.forEach.call(
+                        container.querySelectorAll('input[id^='+ button.id +'], select[id^='+ button.id +']'),
+                        function ( formField ) {
+
+                            if ( formField.tagName.toLowerCase() == 'select' ) {
+
+                                args.push( formField.options[ formField.selectedIndex ].value );
+
+                            } else {
+                                args.push( formField.value );
+                            }
+                        }
+                    );
+
+                    socket.emit( button.id, args );
                     
                 } else {
                     socket.emit( button.id );
@@ -31,7 +69,7 @@ MessageForm.prototype = {
         });
     },
 
-    _createFormElement : function ( message, messageDetails ) {
+    _createFormElement: function ( message, messageDetails ) {
 
         var parent = document.createElement('div');
         var viewModel = {
@@ -40,6 +78,12 @@ MessageForm.prototype = {
 
         if ( messageDetails.arguments ) {
 
+            viewModel.hasArguments = true;
+            viewModel.arguments = [];
+
+            for ( var a= 0, al = messageDetails.arguments.length; a<al; a++ ) {
+                viewModel.arguments.push( this._getInputViewModel( messageDetails.arguments[ a ] ) );
+            }
         }
 
         parent.innerHTML = this._elementTemplate( viewModel );
@@ -50,12 +94,44 @@ MessageForm.prototype = {
         }
     },
 
+    _getInputViewModel: function ( inputConfig ) {
+
+        var viewModel = {};
+
+        for ( var prop in inputConfig ) {
+            if ( inputConfig.hasOwnProperty( prop ) ) {
+                viewModel[ prop ] = inputConfig[ prop ];
+            }
+        }
+
+        switch ( inputConfig.type ) {
+
+            case 'range':
+                viewModel.isRange = true;
+                break;
+
+            case 'select':
+                viewModel.isSelect = true;
+                viewModel.options = inputConfig.options.map( function ( option ) {
+
+                    return {
+                        name: option,
+                        selected: inputConfig.default == option
+                    };
+                });
+                break;
+        }
+
+        return viewModel;
+    },
+
     parse: function ( messages ) {
 
         for ( var message in messages ) {
             this._createFormElement( message, messages[ message ] );
         }
 
+        this._bindInputHandlers();
         this._bindSendHandlers();
     }
 };

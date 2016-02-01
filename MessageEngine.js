@@ -2,7 +2,7 @@ var debug = require('debug')('message-engine');
 
 /**
  * @param {Socket.io} socket
- * @param {Object} messages Hash of message names and objects to handle
+ * @param {Object} messages Hash of message name/object pairs to handle
  */
 var MessageEngine = function ( socket, messages ) {
 
@@ -31,6 +31,19 @@ MessageEngine.prototype = {
         });
     },
 
+    /**
+     * @param {Array} args
+     * @param {String} functionDefinition Should handle the function's arguments
+     *
+     * @return {Object} return what the message's real argument(s) should be
+     */
+    handleArguments: function ( args, functionDefinition ) {
+
+        var handleFunction = eval( functionDefinition );
+
+        return handleFunction.apply( handleFunction, args );
+    },
+
     handleMessage: function ( client, name, args ) {
 
         var messageObject = this.messages[ name ];
@@ -40,11 +53,11 @@ MessageEngine.prototype = {
         if ( messageObject ) {
 
             if ( messageObject.handleArguments ) {
-                debug('handling arguments of '+ name );
-                args = messageObject.handleArguments( args );
+                debug('handling arguments of '+ name, args );
+                args = this.handleArguments( args, messageObject.handleArguments );
             }
 
-            debug('sending '+ name );
+            debug('sending '+ name, ', arguments: ', args );
             this.socket.emit( name, args );
         }
     }
