@@ -17,6 +17,10 @@ use of this easy configured server.
 You automagically get an admin page to fake a client and tinker with
 the arguments and their values, just visit [localhost:8080/admin](http://localhost:8080/admin)
 
+### ip & port
+By default sockit uses `process.env.IP` and `process.env.PORT` with
+a fallback to ip '0.0.0.0' and port 8080. 
+
 ## message configuration
 Message configuration is done in `config.json` through a JSON object with the following
 properties:

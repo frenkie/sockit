@@ -17,6 +17,10 @@ fs.stat('./config.json', function ( err, stats ) {
         var app = express();
         var server = require('http').Server( app );
         var io = socketIo( server );
+
+        // binding to 0.0.0.0 allows connections from any other computer in the network
+        // to your ip address
+        var ipAddress = process.env.IP || '0.0.0.0';
         var port = process.env.PORT || 8080;
 
 
@@ -29,9 +33,7 @@ fs.stat('./config.json', function ( err, stats ) {
         app.use( configRouter );
 
 
-        // binding to 0.0.0.0 allows connections from any other computer in the network
-        // to your ip address
-        server.listen( port, '0.0.0.0', function () {
+        server.listen( port, ipAddress, function () {
 
             debug( 'started on localhost:' + port );
 
