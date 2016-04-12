@@ -44,6 +44,10 @@
           "type": "select",
           "options": ["one", "two", "three"],
           "default": "two"
+        },
+        {
+          "name": "argument5",
+          "type": "json"
         }
       ],
       "handleArguments": "(function handle () { return Array.prototype.join.apply( arguments || [], [':'] ); })"

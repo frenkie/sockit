@@ -42,19 +42,29 @@ MessageForm.prototype = {
             button.addEventListener('click', function () {
 
                 var args = [];
+                var argInputs = container.querySelectorAll('input[id^='+ button.id +'], select[id^='+ button.id +']' );
 
                 if ( /has-arguments/.test( button.className ) ) {
 
-                    Array.prototype.forEach.call(
-                        container.querySelectorAll('input[id^='+ button.id +'], select[id^='+ button.id +']'),
+                    Array.prototype.forEach.call( argInputs
+                        ,
                         function ( formField ) {
 
                             if ( formField.tagName.toLowerCase() == 'select' ) {
 
                                 args.push( formField.options[ formField.selectedIndex ].value );
 
+                            } else if ( /json/.test( formField.className ) ) {
+
+                                var getObject = eval("(function () { return "+ formField.value +"; })");
+                                args.push(  getObject() );
+
                             } else {
                                 args.push( formField.value );
+                            }
+
+                            if ( argInputs.length === 1 ) {
+                                args = args[0];
                             }
                         }
                     );

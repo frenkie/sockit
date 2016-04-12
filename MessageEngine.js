@@ -46,8 +46,14 @@ MessageEngine.prototype = {
                 args = messageObject.handleArguments.apply( messageObject.handleArguments, args );
             }
 
-            debug('sending '+ name, args );
-            this.socket.emit( name, args );
+            if ( args && args.length !== 0 ) {
+                debug('sending '+ name, args );
+                debug( typeof args );
+                this.socket.emit( name, args );
+            } else {
+                debug('sending '+ name );
+                this.socket.emit( name );
+            }
         }
     },
 

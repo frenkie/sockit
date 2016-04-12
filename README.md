@@ -33,7 +33,12 @@ properties:
         // message-name will be the name you can listen for on the socket
         "message-name": {
             
-            // optional array of arguments, will generate input fields on the admin page:
+            // optional array of arguments, will generate input fields on the admin page,
+            // and an array (or just the argument value in case of 1 argument) will be 
+            // passed on as the data of the message.
+            // Note that sockit actually doesn't care what you send and won't parse it.
+            // The type is only needed for the admin page to render the proper input fields
+            // adn in case of a 'json' type eval'ing the input value on that page.
             "arguments" : [                
                 {
                   "name": "argument1",
@@ -56,7 +61,12 @@ properties:
                   "type": "select",
                   "options": ["one", "two", "three", "four"],
                   "default": "two"
-                }
+                },
+                {
+                  "name": "argument5",
+                  "type": "json" // will eval the input string on the admin page as a JS object
+                                 // So you can input {key: 'value'} or {"key":"value"}, that's up to you
+                },                
             ],
             
             // optional function to handle the above arguments serverside 
@@ -94,3 +104,13 @@ based on ip and port configurations of sockit, adjust where needed:
 </script>
  
 ``` 
+
+## versions
+
+### 1.0.0
+Added json type arguments. Mostly useful in the admin page.
+When dealing with a message that just has 1 argument, the value of that argument
+will be passed on, instead of an array with 1 value like in version 0.1.
+
+### 0.1.0
+First draft
